@@ -6,10 +6,10 @@ import random
 import pygame
 
 class HebrewVerbApp:
-    def __init__(self, root, resource_dirs):
+    def __init__(self, root, resource_dirs, display_time=5000):
         self.root = root
         self.root.title("TPR Game")
-        self.root.geometry("800x950")  # Increased height
+        self.root.geometry("800x950")
 
         self.resource_dirs = resource_dirs
         self.images = []
@@ -30,7 +30,7 @@ class HebrewVerbApp:
         self.replay_button = tk.Button(root, text="Replay Audio", command=self.replay_audio)
         self.replay_button.pack(pady=10)
 
-        self.display_time = 5000  # Default 5 seconds
+        self.display_time = display_time  # Use the chosen display time
         self.current_verb_index = -1
 
         self.after_id = None  # To store the after() job ID
@@ -155,7 +155,7 @@ class HebrewVerbApp:
         self.root.destroy()
 
     def show_about(self):
-        messagebox.showinfo("About", "TPR Game\nVersion 1.1\n© 2024 Jeremy Steinberg")
+        messagebox.showinfo("About", "TPR Game\nVersion 0.1\n© 2024 Jeremy Steinberg")
 
     def show_instructions(self):
         instructions = """
@@ -171,7 +171,7 @@ def main():
     root = tk.Tk()
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    def set_resource_dirs(choice):
+    def set_resource_dirs(choice, display_time):
         if choice == '1':
             resource_dirs = [os.path.join(script_dir, "milim1")]
         elif choice == '2':
@@ -184,18 +184,22 @@ def main():
             root.quit()
             return
         button_window.destroy()
-        app = HebrewVerbApp(root, resource_dirs)
+        app = HebrewVerbApp(root, resource_dirs, display_time)
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
     button_window = tk.Toplevel(root)
-    button_window.title("Choose Directory")
-    button_window.geometry("300x200")
+    button_window.title("Choose Directory and Display Time")
+    button_window.geometry("300x300")
 
     tk.Label(button_window, text="Choose a directory to load:").pack(pady=10)
-    tk.Button(button_window, text="Milim 1", command=lambda: set_resource_dirs('1')).pack(pady=5)
-    tk.Button(button_window, text="Milim 2", command=lambda: set_resource_dirs('2')).pack(pady=5)
-    tk.Button(button_window, text="All", command=lambda: set_resource_dirs('all')).pack(pady=5)
+    tk.Button(button_window, text="Milim 1", command=lambda: set_resource_dirs('1', display_time.get())).pack(pady=5)
+    tk.Button(button_window, text="Milim 2", command=lambda: set_resource_dirs('2', display_time.get())).pack(pady=5)
+    tk.Button(button_window, text="All", command=lambda: set_resource_dirs('all', display_time.get())).pack(pady=5)
+
+    tk.Label(button_window, text="Set Display Time (ms):").pack(pady=10)
+    display_time = tk.StringVar(value="5000")
+    tk.Entry(button_window, textvariable=display_time).pack(pady=5)
 
     root.withdraw()  # Hide the root window until a choice is made
     button_window.mainloop()
