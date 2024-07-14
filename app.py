@@ -32,6 +32,9 @@ class HebrewVerbApp:
 
         self.display_time = display_time  # Use the chosen display time
         self.current_verb_index = -1
+        self.repeat_count = 1
+        self.current_repeat = 0
+        self.last_verb_index = -1  # To store the index of the last displayed verb
 
         self.after_id = None  # To store the after() job ID
         self.display_random_verb()
@@ -56,6 +59,7 @@ class HebrewVerbApp:
         settings_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Settings", menu=settings_menu)
         settings_menu.add_command(label="Change Display Time", command=self.change_display_time)
+        settings_menu.add_command(label="Set Repeat Count", command=self.set_repeat_count)
 
         # Help menu
         help_menu = tk.Menu(menubar, tearoff=0)
@@ -85,9 +89,14 @@ class HebrewVerbApp:
             self.root.quit()
 
     def display_random_verb(self):
-        if self.images and self.audios:
-            self.current_verb_index = random.randint(0, len(self.verbs) - 1)
-            self.display_current_verb()
+        if self.current_repeat >= self.repeat_count:
+            new_index = self.current_verb_index
+            while new_index == self.current_verb_index:
+                new_index = random.randint(0, len(self.verbs) - 1)
+            self.current_verb_index = new_index
+            self.current_repeat = 0
+        self.display_current_verb()
+        self.current_repeat += 1
 
         # Cancel any existing after() job before scheduling a new one
         if self.after_id:
@@ -137,6 +146,14 @@ class HebrewVerbApp:
         if new_time:
             self.display_time = new_time
 
+    def set_repeat_count(self):
+        new_count = simpledialog.askinteger("Set Repeat Count", 
+                                            "Enter repeat count:", 
+                                            parent=self.root, 
+                                            minvalue=1)
+        if new_count:
+            self.repeat_count = new_count
+
     def change_resource_dir(self):
         new_dir = filedialog.askdirectory(title="Select Resource Directory")
         if new_dir:
@@ -171,7 +188,7 @@ def main():
     root = tk.Tk()
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
-    def set_resource_dirs(choice, display_time):
+    def set_resource_dirs(choice, display_time, repeat_count):
         milim_dir = os.path.join(script_dir, "milim")
         if choice == 'all':
             resource_dirs = [os.path.join(milim_dir, d) for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
@@ -179,6 +196,7 @@ def main():
             resource_dirs = [os.path.join(milim_dir, choice)]
         button_window.destroy()
         app = HebrewVerbApp(root, resource_dirs, display_time)
+        app.repeat_count = repeat_count  # Set the repeat count
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
@@ -186,17 +204,21 @@ def main():
     subdirs = [d for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
 
     button_window = tk.Toplevel(root)
-    button_window.title("Choose Directory and Display Time")
-    button_window.geometry("300x400")
+    button_window.title("Choose Directory, Display Time, and Repeat Count")
+    button_window.geometry("300x500")
 
     tk.Label(button_window, text="Choose a directory to load:").pack(pady=10)
     for subdir in subdirs:
-        tk.Button(button_window, text=subdir, command=lambda subdir=subdir: set_resource_dirs(subdir, display_time.get())).pack(pady=5)
-    tk.Button(button_window, text="All", command=lambda: set_resource_dirs('all', display_time.get())).pack(pady=5)
+        tk.Button(button_window, text=subdir, command=lambda subdir=subdir: set_resource_dirs(subdir, display_time.get(), int(repeat_count.get()))).pack(pady=5)
+    tk.Button(button_window, text="All", command=lambda: set_resource_dirs('all', display_time.get(), int(repeat_count.get()))).pack(pady=5)
 
     tk.Label(button_window, text="Set Display Time (ms):").pack(pady=10)
-    display_time = tk.StringVar(value="2500")
+    display_time = tk.StringVar(value="1800")
     tk.Entry(button_window, textvariable=display_time).pack(pady=5)
+
+    tk.Label(button_window, text="Set Repeat Count:").pack(pady=10)
+    repeat_count = tk.StringVar(value="3")
+    tk.Entry(button_window, textvariable=repeat_count).pack(pady=5)
 
     root.withdraw()  # Hide the root window until a choice is made
     button_window.mainloop()
