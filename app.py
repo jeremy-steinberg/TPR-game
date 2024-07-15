@@ -207,15 +207,19 @@ def main():
     settings_file = os.path.join(script_dir, "settings.txt")
     settings = read_settings(settings_file)  # Read settings from the file
     
-    def set_resource_dirs(choice, display_time, repeat_count):
+    def set_resource_dirs(choice):
         milim_dir = os.path.join(script_dir, "milim")
         if choice == 'all':
             resource_dirs = [os.path.join(milim_dir, d) for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
         else:
             resource_dirs = [os.path.join(milim_dir, choice)]
+        
+        display_time = int(display_time_entry.get())
+        repeat_count = int(repeat_count_entry.get())
+
         button_window.destroy()
-        app = HebrewVerbApp(root, resource_dirs, display_time)  # Use display_time from settings
-        app.repeat_count = repeat_count  # Use repeat_count from settings
+        app = HebrewVerbApp(root, resource_dirs, display_time)  # Use display_time from entry
+        app.repeat_count = repeat_count  # Use repeat_count from entry
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
@@ -234,8 +238,10 @@ def main():
     dir_label.pack(pady=10)
     
     for subdir in subdirs:
-        tk.Button(button_window, text=subdir, font=("Helvetica", 10), command=lambda subdir=subdir: set_resource_dirs(subdir, settings['display_time'], settings['repeat_count'])).pack(pady=5)
-    tk.Button(button_window, text="All", font=("Helvetica", 10), command=lambda: set_resource_dirs('all', settings['display_time'], settings['repeat_count'])).pack(pady=5)
+        tk.Button(button_window, text=subdir, font=("Helvetica", 10), 
+                  command=lambda subdir=subdir: set_resource_dirs(subdir)).pack(pady=5)
+    tk.Button(button_window, text="All", font=("Helvetica", 10), 
+              command=lambda: set_resource_dirs('all')).pack(pady=5)
 
     display_time_label = tk.Label(button_window, text="Set Display Time (ms):", font=("Helvetica", 12), bg="#f0f0f0")
     display_time_label.pack(pady=10)
@@ -251,6 +257,7 @@ def main():
 
     root.withdraw()  # Hide the root window until a choice is made
     button_window.mainloop()
+
 
 if __name__ == "__main__":
     main()
