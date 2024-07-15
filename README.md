@@ -57,6 +57,8 @@ Learning action verbs. Basic concept idea from Total Physical Response (TPR). Us
    - Use the File menu to change settings or exit the application.
    - Press 'q' to return to the main menu or 't' to change the display time.
 
+![TPR screenshot](https://github.com/user-attachments/assets/38ec03c9-1723-4578-bc92-75925232ddbe)
+
 ## Contributing
 
 Contributions are welcome! Please create an issue to discuss the changes you want to make before submitting a pull request.
