@@ -187,7 +187,7 @@ class HebrewVerbApp:
         self.root.destroy()
 
     def show_about(self):
-        messagebox.showinfo("About", "TPR Game\nVersion 0.1\n© 2024 Jeremy Steinberg")
+        messagebox.showinfo("About", "TPR Game\nVersion 0.2\n© 2024 Jeremy Steinberg")
 
     def show_instructions(self):
         instructions = """
