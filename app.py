@@ -17,7 +17,7 @@ class HebrewVerbApp:
     def __init__(self, root, resource_dirs, display_time=2500):
         self.root = root
         self.root.title("TPR Game")
-        self.root.geometry("800x950")
+        self.root.geometry("1200x950")
 
         self.resource_dirs = resource_dirs
         self.images = []
@@ -126,7 +126,7 @@ class HebrewVerbApp:
         try:
             # Display image
             image = Image.open(image_path)
-            image = image.resize((700, 700), Image.LANCZOS)
+            image = image.resize((1240, 700), Image.LANCZOS)
             photo = ImageTk.PhotoImage(image)
             self.image_label.config(image=photo)
             self.image_label.image = photo
