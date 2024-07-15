@@ -5,6 +5,14 @@ import os
 import random
 import pygame
 
+def read_settings(file_path):
+    settings = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            name, value = line.strip().split('=')
+            settings[name] = int(value)
+    return settings
+
 class HebrewVerbApp:
     def __init__(self, root, resource_dirs, display_time=2500):
         self.root = root
@@ -36,12 +44,14 @@ class HebrewVerbApp:
         self.current_repeat = 0
         self.last_verb_index = -1  # To store the index of the last displayed verb
 
-        self.after_id = None  # To store the after() job ID
-        self.display_random_verb()
+        self.after_id = None  # Initialize after_id
 
         # Bind key press events
         self.root.bind("<KeyPress>", self.on_key_press)
         self.root.bind("<space>", self.replay_audio)
+
+        self.start_random_selection()  # Start with an initial random selection
+
 
     def create_menu(self):
         menubar = tk.Menu(self.root)
@@ -102,6 +112,11 @@ class HebrewVerbApp:
         if self.after_id:
             self.root.after_cancel(self.after_id)
         self.after_id = self.root.after(self.display_time, self.display_random_verb)
+
+    def start_random_selection(self):
+        self.current_verb_index = random.randint(0, len(self.verbs) - 1)  # Initial random selection
+        self.display_random_verb()
+
 
     def display_current_verb(self):
         image_path = self.images[self.current_verb_index]
@@ -184,9 +199,13 @@ class HebrewVerbApp:
         """
         messagebox.showinfo("Instructions", instructions)
 
+
 def main():
     root = tk.Tk()
     script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    settings_file = os.path.join(script_dir, "settings.txt")
+    settings = read_settings(settings_file)  # Read settings from the file
     
     def set_resource_dirs(choice, display_time, repeat_count):
         milim_dir = os.path.join(script_dir, "milim")
@@ -195,8 +214,8 @@ def main():
         else:
             resource_dirs = [os.path.join(milim_dir, choice)]
         button_window.destroy()
-        app = HebrewVerbApp(root, resource_dirs, display_time)
-        app.repeat_count = repeat_count  # Set the repeat count
+        app = HebrewVerbApp(root, resource_dirs, display_time)  # Use display_time from settings
+        app.repeat_count = repeat_count  # Use repeat_count from settings
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
@@ -205,23 +224,35 @@ def main():
 
     button_window = tk.Toplevel(root)
     button_window.title("Choose Directory, Display Time, and Repeat Count")
-    button_window.geometry("300x500")
+    button_window.geometry("400x600")
+    button_window.config(bg="#f0f0f0")
 
-    tk.Label(button_window, text="Choose a directory to load:").pack(pady=10)
+    title_label = tk.Label(button_window, text="TPR Game Setup", font=("Helvetica", 16, "bold"), bg="#f0f0f0")
+    title_label.pack(pady=20)
+
+    dir_label = tk.Label(button_window, text="Choose a directory to load:", font=("Helvetica", 12), bg="#f0f0f0")
+    dir_label.pack(pady=10)
+    
     for subdir in subdirs:
-        tk.Button(button_window, text=subdir, command=lambda subdir=subdir: set_resource_dirs(subdir, display_time.get(), int(repeat_count.get()))).pack(pady=5)
-    tk.Button(button_window, text="All", command=lambda: set_resource_dirs('all', display_time.get(), int(repeat_count.get()))).pack(pady=5)
+        tk.Button(button_window, text=subdir, font=("Helvetica", 10), command=lambda subdir=subdir: set_resource_dirs(subdir, settings['display_time'], settings['repeat_count'])).pack(pady=5)
+    tk.Button(button_window, text="All", font=("Helvetica", 10), command=lambda: set_resource_dirs('all', settings['display_time'], settings['repeat_count'])).pack(pady=5)
 
-    tk.Label(button_window, text="Set Display Time (ms):").pack(pady=10)
-    display_time = tk.StringVar(value="1800")
-    tk.Entry(button_window, textvariable=display_time).pack(pady=5)
+    display_time_label = tk.Label(button_window, text="Set Display Time (ms):", font=("Helvetica", 12), bg="#f0f0f0")
+    display_time_label.pack(pady=10)
+    display_time = tk.StringVar(value=settings['display_time'])
+    display_time_entry = tk.Entry(button_window, textvariable=display_time, font=("Helvetica", 10))
+    display_time_entry.pack(pady=5)
 
-    tk.Label(button_window, text="Set Repeat Count:").pack(pady=10)
-    repeat_count = tk.StringVar(value="3")
-    tk.Entry(button_window, textvariable=repeat_count).pack(pady=5)
+    repeat_count_label = tk.Label(button_window, text="Set Repeat Count:", font=("Helvetica", 12), bg="#f0f0f0")
+    repeat_count_label.pack(pady=10)
+    repeat_count = tk.StringVar(value=settings['repeat_count'])
+    repeat_count_entry = tk.Entry(button_window, textvariable=repeat_count, font=("Helvetica", 10))
+    repeat_count_entry.pack(pady=5)
 
     root.withdraw()  # Hide the root window until a choice is made
     button_window.mainloop()
 
 if __name__ == "__main__":
     main()
+
+
