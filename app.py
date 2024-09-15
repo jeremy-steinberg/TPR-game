@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import os
 import random
 import pygame
+import csv
 
 def read_settings(file_path):
     settings = {}
@@ -13,11 +14,25 @@ def read_settings(file_path):
             settings[name] = int(value)
     return settings
 
+def read_verb_binyan_mapping(file_path):
+    mapping = {}
+    try:
+        with open(file_path, 'r', encoding='utf-8') as csvfile:
+            reader = csv.reader(csvfile)
+            for row in reader:
+                if len(row) >= 2:
+                    verb = row[0]
+                    binyan = row[1]
+                    mapping[verb] = binyan
+    except Exception as e:
+        print(f"Error reading binyan mapping: {e}")
+    return mapping
+
 class HebrewVerbApp:
     def __init__(self, root, resource_dirs, display_time=2500):
         self.root = root
         self.root.title("TPR Game")
-        self.root.geometry("1200x950")
+        self.root.geometry("1200x1000")
 
         self.resource_dirs = resource_dirs
         self.images = []
@@ -35,8 +50,8 @@ class HebrewVerbApp:
         self.verb_label = tk.Label(root, font=("Arial", 44))
         self.verb_label.pack(pady=20)
 
-        self.replay_button = tk.Button(root, text="Replay Audio", command=self.replay_audio)
-        self.replay_button.pack(pady=10)
+        self.gesture_label = tk.Label(root, font=("Arial", 20))
+        self.gesture_label.pack(pady=10)
 
         self.display_time = display_time  # Use the chosen display time
         self.current_verb_index = -1
@@ -50,8 +65,33 @@ class HebrewVerbApp:
         self.root.bind("<KeyPress>", self.on_key_press)
         self.root.bind("<space>", self.replay_audio)
 
-        self.start_random_selection()  # Start with an initial random selection
+        # Read the verb-binyan mapping
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.binyan_mapping = read_verb_binyan_mapping(os.path.join(script_dir, 'verb_binyan.csv'))
 
+        # Define binyan colors
+        self.binyan_colors = {
+            "PA'AL": 'blue',
+            "NIF'AL": 'purple',
+            "PI'EL": 'red',
+            "PU'AL": 'yellow',
+            "HIF'IL": 'green',
+            "HUF'AL": 'pink',
+            "HITPA'EL": 'orange'
+        }
+
+        # Define gestures for each binyan
+        self.binyan_gestures = {
+            "PA'AL": "Pushing forward movement with your hand.",
+            "NIF'AL": "Pointing towards yourself.",
+            "PI'EL": "Punching forward motion.",
+            "PU'AL": "Placing both hands over your head in a protective manner.",
+            "HIF'IL": "Pointing forward with one hand as if instructing someone.",
+            "HUF'AL": "Palms upturned, as if accepting something.",
+            "HITPA'EL": "Interlocking fingers of both hands."
+        }
+
+        self.start_random_selection()  # Start with an initial random selection
 
     def create_menu(self):
         menubar = tk.Menu(self.root)
@@ -117,7 +157,6 @@ class HebrewVerbApp:
         self.current_verb_index = random.randint(0, len(self.verbs) - 1)  # Initial random selection
         self.display_random_verb()
 
-
     def display_current_verb(self):
         image_path = self.images[self.current_verb_index]
         audio_path = self.audios[self.current_verb_index]
@@ -130,7 +169,14 @@ class HebrewVerbApp:
             photo = ImageTk.PhotoImage(image)
             self.image_label.config(image=photo)
             self.image_label.image = photo
-            self.verb_label.config(text=verb)
+
+            # Get the binyan of the current verb
+            binyan = self.binyan_mapping.get(verb, "Unknown")
+            color = self.binyan_colors.get(binyan, "black")
+            gesture = self.binyan_gestures.get(binyan, "No gesture available.")
+
+            self.verb_label.config(text=verb, fg=color)
+            self.gesture_label.config(text=f"Binyan: {binyan}\nGesture: {gesture}")
 
             # Play audio
             pygame.mixer.music.stop()
@@ -153,18 +199,18 @@ class HebrewVerbApp:
             self.change_display_time()
 
     def change_display_time(self):
-        new_time = simpledialog.askinteger("Change Display Time", 
-                                           "Enter new display time (in milliseconds):", 
-                                           parent=self.root, 
-                                           minvalue=1000, 
+        new_time = simpledialog.askinteger("Change Display Time",
+                                           "Enter new display time (in milliseconds):",
+                                           parent=self.root,
+                                           minvalue=1000,
                                            maxvalue=10000)
         if new_time:
             self.display_time = new_time
 
     def set_repeat_count(self):
-        new_count = simpledialog.askinteger("Set Repeat Count", 
-                                            "Enter repeat count:", 
-                                            parent=self.root, 
+        new_count = simpledialog.askinteger("Set Repeat Count",
+                                            "Enter repeat count:",
+                                            parent=self.root,
                                             minvalue=1)
         if new_count:
             self.repeat_count = new_count
@@ -199,21 +245,20 @@ class HebrewVerbApp:
         """
         messagebox.showinfo("Instructions", instructions)
 
-
 def main():
     root = tk.Tk()
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    
+
     settings_file = os.path.join(script_dir, "settings.txt")
     settings = read_settings(settings_file)  # Read settings from the file
-    
+
     def set_resource_dirs(choice):
         milim_dir = os.path.join(script_dir, "milim")
         if choice == 'all':
             resource_dirs = [os.path.join(milim_dir, d) for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
         else:
             resource_dirs = [os.path.join(milim_dir, choice)]
-        
+
         display_time = int(display_time_entry.get())
         repeat_count = int(repeat_count_entry.get())
 
@@ -223,12 +268,52 @@ def main():
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
+    def choose_random_10_words():
+        milim_dir = os.path.join(script_dir, "milim")
+        subdirs = [d for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
+
+        if not subdirs:
+            messagebox.showerror("Error", "No subdirectories found in the milim directory.")
+            return
+
+        # Choose a random subdirectory
+        chosen_subdir = random.choice(subdirs)
+        chosen_subdir_path = os.path.join(milim_dir, chosen_subdir)
+
+        # Get all files in the chosen subdirectory
+        all_files = [f for f in os.listdir(chosen_subdir_path) if f.endswith(('.png', '.jpg', '.jpeg', '.gif', '.mp3'))]
+
+        # Group files by their base name (assuming image and audio files have the same base name)
+        file_groups = {}
+        for file in all_files:
+            base_name = os.path.splitext(file)[0]
+            if base_name not in file_groups:
+                file_groups[base_name] = []
+            file_groups[base_name].append(file)
+
+        # Select up to 10 random groups (verbs)
+        selected_groups = random.sample(list(file_groups.keys()), min(len(file_groups), 10))
+
+        # Flatten the list of files from selected groups
+        selected_files = [file for group in selected_groups for file in file_groups[group]]
+
+        resource_dir = chosen_subdir_path
+
+        display_time = int(display_time_entry.get())
+        repeat_count = int(repeat_count_entry.get())
+
+        button_window.destroy()
+        app = HebrewVerbApp(root, [resource_dir], display_time)
+        app.repeat_count = repeat_count
+        root.deiconify()
+        root.mainloop()
+
     milim_dir = os.path.join(script_dir, "milim")
     subdirs = [d for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
 
     button_window = tk.Toplevel(root)
     button_window.title("Choose Directory, Display Time, and Repeat Count")
-    button_window.geometry("400x600")
+    button_window.geometry("400x700")
     button_window.config(bg="#f0f0f0")
 
     title_label = tk.Label(button_window, text="TPR Game Setup", font=("Helvetica", 16, "bold"), bg="#f0f0f0")
@@ -236,12 +321,16 @@ def main():
 
     dir_label = tk.Label(button_window, text="Choose a directory to load:", font=("Helvetica", 12), bg="#f0f0f0")
     dir_label.pack(pady=10)
-    
+
     for subdir in subdirs:
-        tk.Button(button_window, text=subdir, font=("Helvetica", 10), 
+        tk.Button(button_window, text=subdir, font=("Helvetica", 10),
                   command=lambda subdir=subdir: set_resource_dirs(subdir)).pack(pady=5)
-    tk.Button(button_window, text="All", font=("Helvetica", 10), 
+    tk.Button(button_window, text="All", font=("Helvetica", 10),
               command=lambda: set_resource_dirs('all')).pack(pady=5)
+
+    # New button for selecting 10 random words
+    tk.Button(button_window, text="Random 10 Words", font=("Helvetica", 10),
+              command=choose_random_10_words).pack(pady=20)
 
     display_time_label = tk.Label(button_window, text="Set Display Time (ms):", font=("Helvetica", 12), bg="#f0f0f0")
     display_time_label.pack(pady=10)
@@ -258,8 +347,5 @@ def main():
     root.withdraw()  # Hide the root window until a choice is made
     button_window.mainloop()
 
-
 if __name__ == "__main__":
     main()
-
-
