@@ -74,7 +74,7 @@ class HebrewVerbApp:
             "PA'AL": 'blue',
             "NIF'AL": 'purple',
             "PI'EL": 'red',
-            "PU'AL": 'yellow',
+            "PU'AL": 'brown',
             "HIF'IL": 'green',
             "HUF'AL": 'pink',
             "HITPA'EL": 'orange'
