@@ -20,10 +20,12 @@ def read_verb_binyan_mapping(file_path):
         with open(file_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                if len(row) >= 2:
+                if len(row) >= 3:
                     verb = row[0]
                     binyan = row[1]
-                    mapping[verb] = binyan
+                    root = row[2]
+                    mapping[verb] = {'binyan': binyan, 'root': root}
+                    # print(f"Loaded verb: {verb}, binyan: {binyan}, root: {root}")  # Debug print
     except Exception as e:
         print(f"Error reading binyan mapping: {e}")
     return mapping
@@ -32,7 +34,8 @@ class HebrewVerbApp:
     def __init__(self, root, resource_dirs, display_time=2500):
         self.root = root
         self.root.title("TPR Game")
-        self.root.geometry("1200x1000")
+        self.root.geometry("1200x1100")
+        self.root.configure(bg="#F0F4F8")
 
         self.resource_dirs = resource_dirs
         self.images = []
@@ -49,6 +52,9 @@ class HebrewVerbApp:
 
         self.verb_label = tk.Label(root, font=("Arial", 44))
         self.verb_label.pack(pady=20)
+
+        self.root_label = tk.Label(root, font=("Arial", 32))
+        self.root_label.pack(pady=10)
 
         self.gesture_label = tk.Label(root, font=("Arial", 20))
         self.gesture_label.pack(pady=10)
@@ -67,7 +73,7 @@ class HebrewVerbApp:
 
         # Read the verb-binyan mapping
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.binyan_mapping = read_verb_binyan_mapping(os.path.join(script_dir, 'verb_binyan.csv'))
+        self.verb_info = read_verb_binyan_mapping(os.path.join(script_dir, 'verb_binyan.csv'))
 
         # Define binyan colors
         self.binyan_colors = {
@@ -83,11 +89,11 @@ class HebrewVerbApp:
         # Define gestures for each binyan
         self.binyan_gestures = {
             "PA'AL": "Pushing forward movement with your hand.",
-            "NIF'AL": "Pointing towards yourself.",
+            "NIF'AL": "Pushing towards your other hand.",
             "PI'EL": "Punching forward motion.",
-            "PU'AL": "Placing both hands over your head in a protective manner.",
+            "PU'AL": "Punching towards your other hand.",
             "HIF'IL": "Pointing forward with one hand as if instructing someone.",
-            "HUF'AL": "Palms upturned, as if accepting something.",
+            "HUF'AL": "Pointing towards your other hand.",
             "HITPA'EL": "Interlocking fingers of both hands."
         }
 
@@ -170,12 +176,19 @@ class HebrewVerbApp:
             self.image_label.config(image=photo)
             self.image_label.image = photo
 
-            # Get the binyan of the current verb
-            binyan = self.binyan_mapping.get(verb, "Unknown")
+            # Get the verb info
+            verb_info = self.verb_info.get(verb, {"binyan": "Unknown", "root": "Unknown"})
+            binyan = verb_info["binyan"]
+            root = verb_info["root"]
             color = self.binyan_colors.get(binyan, "black")
             gesture = self.binyan_gestures.get(binyan, "No gesture available.")
 
+            # Format root with dashes between each character
+            formatted_root = '-'.join(root)
+
+            # Update labels
             self.verb_label.config(text=verb, fg=color)
+            self.root_label.config(text=f"Root: {formatted_root}", fg="black")
             self.gesture_label.config(text=f"Binyan: {binyan}\nGesture: {gesture}")
 
             # Play audio
@@ -185,6 +198,7 @@ class HebrewVerbApp:
 
         except Exception as e:
             print(f"Error displaying verb {verb}: {str(e)}")
+
 
     def replay_audio(self, event=None):
         if self.current_verb_index >= 0:

@@ -1,55 +1,55 @@
 import tkinter as tk
 from tkinter import font as tkfont
 
-# Dictionary containing information for each binyan (unchanged)
+# Dictionary containing information for each binyan
 binyan_info = {
     "Pa'al (פָּעַל)": {
         "Characteristics": "Basic form; most common verbs; simple actions.",
         "Mnemonic": '"Pal" Doing Actions: Visualize a friend (pal) performing everyday actions.',
         "Gesture": 'Pushing forward movement with your hand. Represents basic, straightforward actions.',
-        "Example": "לִכְתּוֹב (lichtov) - to write.",
+        "Example": "לִכְתּוֹב (lichtov) - to write; כָּתַב (katav) - he wrote",
         "Color": "#3498db"  # Soft blue
     },
     "Pi'el (פִּעֵל)": {
-        "Characteristics": "Intensive, frequentative, or causative actions.",
+        "Characteristics": "Intensive or causative actions; often transitive.",
         "Mnemonic": '"Peeling Layers": Visualize peeling layers to intensify an action.',
-        "Gesture": 'Punching forward motion. Represents intensified or repeated actions.',
-        "Example": "לְדַבֵּר (ledaber) - to speak.",
+        "Gesture": 'Punching forward motion with both hands. Represents intensified or repeated actions.',
+        "Example": "לְדַבֵּר (ledaber) - to speak; דִּבֵּר (diber) - he spoke (intensively)",
         "Color": "#e74c3c"  # Soft red
     },
     "Hif'il (הִפְעִיל)": {
-        "Characteristics": "Causative action; causing something to happen.",
+        "Characteristics": "Causative action; causing someone/something to do an action.",
         "Mnemonic": '"He Feels" to Cause: Associate "he feels" with causing an action.',
         "Gesture": 'Pointing forward with one hand as if instructing someone. Signifies causing an action to happen.',
-        "Example": "לְהַדְלִיק (lehadlik) - lit (to cause to light).",
+        "Example": "לְהַדְלִיק (lehadlik) - to light (to cause to burn); הִדְלִיק (hidlik) - he lit",
         "Color": "#2ecc71"  # Soft green
     },
     "Hitpa'el (הִתְפַּעֵל)": {
         "Characteristics": "Reflexive or reciprocal actions; the subject acts upon themselves.",
         "Mnemonic": '"Hit Yourself": Associate "hit" with actions done to oneself.',
         "Gesture": 'Interlocking fingers of both hands. Represents mutual or reflexive actions.',
-        "Example": "לְהִתְרַחֵץ (lehitrachetz) - to wash oneself.",
+        "Example": "לְהִתְרַחֵץ (lehitracheitz) - to wash oneself; הִתְרַחֵץ (hitracheitz) - he washed himself",
         "Color": "#f39c12"  # Soft orange
     },
     "Huf'al (הֻפְעַל)": {
-        "Characteristics": "Passive of HIF'IL; causative passive.",
+        "Characteristics": "Passive of Hif'il; causative passive.",
         "Mnemonic": '"Who Fell": Sounds like "hu", indicating passive causation.',
-        "Gesture": 'Palms upturned, as if accepting something. Reflects being caused to experience an action.',
-        "Example": "לְהַחֲלִיף (lehachalif) - to be replaced.",
+        "Gesture": 'Pointing towards your other hand. Reflects being caused to experience an action.',
+        "Example": "הוּדְלַק (hudlak) - was lit (was caused to burn). Note: Huf'al doesn't have an infinitive form.",
         "Color": "#e84393"  # Soft pink
     },
     "Pu'al (פֻּעַל)": {
-        "Characteristics": "Passive of PI'EL; denotes intensive passive actions.",
-        "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive action.',
-        "Gesture": 'Placing both hands over your head in a protective manner. Indicates receiving an intensive action passively.',
-        "Example": "דֻּבַּר (dubar) - was spoken. Note Pu'al doesn't have an infinitive form",
+        "Characteristics": "Passive of Pi'el; denotes intensive passive actions.",
+        "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive intensive action.',
+        "Gesture": 'Punching your other hand. Indicates receiving an intensive action passively.',
+        "Example": "דֻּבַּר (dubar) - was spoken (intensively). Note: Pu'al doesn't have an infinitive form.",
         "Color": "#f1c40f"  # Soft yellow
     },
     "Nif'al (נִפְעַל)": {
-        "Characteristics": "Passive voice or reflexive; action happening to the subject.",
-        "Mnemonic": '"Kneel" (sounds like "ni-"): Imagine kneeling to receive an action. Indicates the action is happening to oneself or is passive.',
-        "Gesture": 'Pointing towards yourself. Indicates the action is happening to oneself or is passive.',
-        "Example": "לְהִיכָּנֵס (lehikanes) - to enter.",
+        "Characteristics": "Passive voice of Pa'al or reflexive; action happening to the subject.",
+        "Mnemonic": '"Kneel" (sounds like "ni-"): Imagine kneeling to receive an action.',
+        "Gesture": 'Pushing towards your other hand. Indicates the action is happening to oneself or is passive.',
+        "Example": "לְהִכָּתֵב (lehikatev) - to be written; נִכְתַּב (nichtav) - it was written",
         "Color": "#9b59b6"  # Soft purple
     }
 }
