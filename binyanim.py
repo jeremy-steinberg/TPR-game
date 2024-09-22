@@ -39,11 +39,11 @@ binyan_info = {
         "Color": "#e84393"  # Soft pink
     },
     "Pu'al (פֻּעַל)": {
-        "Characteristics": "Passive of Pi'el; denotes intensive passive actions.",
-        "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive intensive action.',
-        "Gesture": 'Punching your other hand. Indicates receiving an intensive action passively.',
-        "Example": "דֻּבַּר (dubar) - was spoken (intensively). Note: Pu'al doesn't have an infinitive form.",
-        "Color": "#f1c40f"  # Soft yellow
+        "Characteristics": "Passive of PI'EL; denotes intensive passive actions.",
+        "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive action.',
+        "Gesture": 'Placing both hands over your head in a protective manner. Indicates receiving an intensive action passively.',
+        "Example": "דֻּבַּר (dubar) - was spoken. Note Pu'al doesn't have an infinitive form",
+        "Color": "#a0522d"  # Soft brown
     },
     "Nif'al (נִפְעַל)": {
         "Characteristics": "Passive voice of Pa'al or reflexive; action happening to the subject.",
