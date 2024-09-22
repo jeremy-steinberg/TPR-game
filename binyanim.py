@@ -43,7 +43,7 @@ binyan_info = {
         "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive action.',
         "Gesture": 'Placing both hands over your head in a protective manner. Indicates receiving an intensive action passively.',
         "Example": "דֻּבַּר (dubar) - was spoken. Note Pu'al doesn't have an infinitive form",
-        "Color": "#f1c40f"  # Soft yellow
+        "Color": "#a0522d"  # Soft yellow
     },
     "Nif'al (נִפְעַל)": {
         "Characteristics": "Passive voice or reflexive; action happening to the subject.",
