@@ -1,2 +1,2 @@
-display_time=1800
-repeat_count=3
+display_time=1500
+repeat_count=1
