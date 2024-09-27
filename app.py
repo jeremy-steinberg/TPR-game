@@ -513,7 +513,7 @@ def main():
     scrollbar.pack(side="right", fill="y")
 
     # Define number of columns per row
-    columns = 3
+    columns = 5
 
     # Dictionary to hold the state of each checkbox
     checkbox_vars = {}
@@ -529,10 +529,10 @@ def main():
 
     # "Select All" and "Deselect All" buttons for directories
     select_all_btn = ttk.Button(scrollable_frame, text="Select All", command=lambda: [v.set(True) for v in checkbox_vars.values()])
-    select_all_btn.grid(row=(len(subdirs) // columns) + 1, column=0, padx=5, pady=5, sticky="EW")
+    select_all_btn.grid(row=(len(subdirs) // columns) + 1, column=0, columnspan=2, padx=5, pady=5, sticky="EW")
 
     deselect_all_btn = ttk.Button(scrollable_frame, text="Deselect All", command=lambda: [v.set(False) for v in checkbox_vars.values()])
-    deselect_all_btn.grid(row=(len(subdirs) // columns) + 1, column=1, padx=5, pady=5, sticky="EW")
+    deselect_all_btn.grid(row=(len(subdirs) // columns) + 1, column=2, columnspan=2, padx=5, pady=5, sticky="EW")
 
     # Configure column weights in scrollable_frame to make checkboxes expand equally
     for col in range(columns):
