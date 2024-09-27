@@ -32,14 +32,14 @@ binyan_info = {
         "Color": "#f39c12"  # Soft orange
     },
     "Huf'al (הֻפְעַל)": {
-        "Characteristics": "Passive of Hif'il; causative passive.",
+        "Characteristics": "Passive of Hif'il; causative passive. Focuses on the object rather than subject.",
         "Mnemonic": '"Who Fell": Sounds like "hu", indicating passive causation.',
         "Gesture": 'Pointing towards your other hand. Reflects being caused to experience an action.',
         "Example": "הוּדְלַק (hudlak) - was lit (was caused to burn). Note: Huf'al doesn't have an infinitive form.",
         "Color": "#e84393"  # Soft pink
     },
     "Pu'al (פֻּעַל)": {
-        "Characteristics": "Passive of PI'EL; denotes intensive passive actions.",
+        "Characteristics": "Passive of PI'EL; denotes intensive passive actions. Focuses on the object rather than subject",
         "Mnemonic": '"Pool" Immersion: Imagine being immersed in a pool, representing passive action.',
         "Gesture": 'Placing both hands over your head in a protective manner. Indicates receiving an intensive action passively.',
         "Example": "דֻּבַּר (dubar) - was spoken. Note Pu'al doesn't have an infinitive form",
