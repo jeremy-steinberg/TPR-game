@@ -3,8 +3,8 @@ Learning action verbs. Basic concept idea from Total Physical Response (TPR). Us
 ## Features
 
 - Display of images and playback of audio files for Hebrew verbs
-- Random selection of verbs with customizable display time
-- Option to replay audio
+- Random selection of verbs with customizable display time and repetitions
+- Colour coded according to the binyan (PAAL - blue, PIEL - red, HIFIL - green, HITPAEL - orange, HUFAL - pink, PUAL - brown, NIFAL - purple)
 - Menu options for changing settings, including display time and repeat count
 - Easy-to-use graphical interface built with Tkinter
 
@@ -34,7 +34,7 @@ Learning action verbs. Basic concept idea from Total Physical Response (TPR). Us
    - Place image files (`.png`, `.jpg`, `.jpeg`, `.gif`) and audio files (`.mp3`) in the respective subdirectories.
 
 4. **Configure settings:**
-   - Create a `settings.txt` file in the project root with the following format:
+   - Edit settings within the app or use the `settings.txt` file in the project root with the following format:
      ```
      display_time=2500
      repeat_count=1
@@ -48,8 +48,10 @@ Learning action verbs. Basic concept idea from Total Physical Response (TPR). Us
    ```
 
 2. **Setup the game:**
-   - Choose a directory to load resources from.
+   - Choose a directory or directories to load resources from.
+   - Select Binyan types
    - Set the display time in milliseconds and the repeat count.
+   - Select Start or Random 10 words
 
 3. **Interacting with the game:**
    - The game will automatically display images and play corresponding audio files.
