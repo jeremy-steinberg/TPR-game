@@ -40,10 +40,13 @@ def read_verb_binyan_mapping(file_path):
                     verb = row[0].strip()
                     binyan = row[1].strip()
                     root = row[2].strip()
-                    mapping[verb] = {'binyan': binyan, 'root': root}
+                    # Read the fourth column if available
+                    english = row[3].strip() if len(row) >= 4 else ""
+                    mapping[verb] = {'binyan': binyan, 'root': root, 'english': english}
     except Exception as e:
         print(f"Error reading binyan mapping: {e}")
     return mapping
+
 
 def center_window(window, width, height):
     window.update_idletasks()  # Ensure window dimensions are calculated
@@ -54,10 +57,10 @@ def center_window(window, width, height):
     window.geometry(f"{width}x{height}+{x}+{y}")
 
 class HebrewVerbApp:
-    def __init__(self, root, resource_dirs, selected_binyans, display_time=2500, repeat_count=1, settings_file='settings.txt'):
+    def __init__(self, root, resource_dirs, selected_binyans, display_time=2500, repeat_count=1, display_english=False, settings_file='settings.txt'):
         self.root = root
         self.root.title("TPR Game")
-        center_window(self.root, 1200, 1100)  # Center the window
+        center_window(self.root, 1200, 1200)  # Increased height to accommodate English label
         self.root.configure(bg="#F0F4F8")
 
         self.resource_dirs = resource_dirs
@@ -65,7 +68,7 @@ class HebrewVerbApp:
         self.audios = []
         self.verbs = []
         self.selected_binyans = selected_binyans  # Store selected binyan types
-        
+        self.display_english = display_english  # New attribute
 
         pygame.mixer.init()
 
@@ -76,6 +79,9 @@ class HebrewVerbApp:
 
         self.verb_label = tk.Label(root, font=("Arial", 44))
         self.verb_label.pack(pady=20)
+
+        self.english_label = tk.Label(root, font=("Arial", 24))  # New label for English translation
+        self.english_label.pack(pady=10)
 
         self.root_label = tk.Label(root, font=("Arial", 32))
         self.root_label.pack(pady=10)
@@ -252,9 +258,10 @@ class HebrewVerbApp:
             self.image_label.image = photo
 
             # Get the verb info
-            verb_info = self.verb_info.get(verb, {"binyan": "Unknown", "root": "Unknown"})
+            verb_info = self.verb_info.get(verb, {"binyan": "Unknown", "root": "Unknown", "english": ""})
             binyan = verb_info["binyan"]
             root = verb_info["root"]
+            english = verb_info.get("english", "")
             color = self.binyan_colors.get(binyan, "black")
             gesture = self.binyan_gestures.get(binyan, "No gesture available.")
 
@@ -265,6 +272,12 @@ class HebrewVerbApp:
             self.verb_label.config(text=verb, fg=color)
             self.root_label.config(text=f"Root: {formatted_root}", fg="black")
             self.gesture_label.config(text=f"Binyan: {binyan}\nGesture: {gesture}")
+
+            # Update English translation label
+            if self.display_english and english:
+                self.english_label.config(text=f"English: {english}")
+            else:
+                self.english_label.config(text="")  # Clear the label if not displaying
 
             # Play audio
             pygame.mixer.music.stop()
@@ -364,7 +377,7 @@ def main():
     settings_file = os.path.join(script_dir, "settings.txt")
     settings = read_settings(settings_file)  # Read settings from the file
 
-    def start_game(selected_dirs, selected_binyans):
+    def start_game(selected_dirs, selected_binyans, display_english):
         if not selected_dirs:
             messagebox.showerror("No Selection", "Please select at least one milim folder to start the game.")
             return
@@ -380,12 +393,13 @@ def main():
             return
 
         button_window.destroy()
-        app = HebrewVerbApp(root, selected_dirs, selected_binyans, display_time_val, repeat_count_val, settings_file)
+        app = HebrewVerbApp(root, selected_dirs, selected_binyans, display_time_val, repeat_count_val, display_english, settings_file)
         app.repeat_count = repeat_count_val  # Use repeat_count from entry
         root.deiconify()  # Show the root window after selection
         root.mainloop()
 
-    def choose_random_10_words(selected_binyans):
+
+    def choose_random_10_words(selected_binyans, display_english):
         milim_dir = os.path.join(script_dir, "milim")
         subdirs = [d for d in os.listdir(milim_dir) if os.path.isdir(os.path.join(milim_dir, d))]
 
@@ -436,7 +450,7 @@ def main():
             return
 
         button_window.destroy()
-        app = HebrewVerbApp(root, [temp_dir], selected_binyans, display_time_val, repeat_count_val, settings_file)
+        app = HebrewVerbApp(root, [temp_dir], selected_binyans, display_time_val, repeat_count_val, display_english, settings_file)
 
         # Optional: Ensure temporary directory is deleted when the app exits
         def on_exit():
@@ -451,6 +465,7 @@ def main():
         app.repeat_count = repeat_count_val
         root.deiconify()
         root.mainloop()
+
 
     milim_dir = os.path.join(script_dir, "milim")
     if not os.path.exists(milim_dir):
@@ -468,7 +483,7 @@ def main():
 
     button_window = tk.Toplevel(root)
     button_window.title("TPR Game Setup")
-    center_window(button_window, 600, 700)  # Increased width to accommodate binyan checkboxes
+    center_window(button_window, 600, 800)  # Increased height to accommodate new checkbox
     button_window.resizable(True, True)  # Allow resizing
     button_window.configure(bg="#f0f0f0")
 
@@ -570,32 +585,43 @@ def main():
     for col in range(binyan_columns):
         binyan_frame.columnconfigure(col, weight=1)
 
+    # Display English Translation Checkbox
+    display_english_var = tk.BooleanVar()
+    display_english_checkbox = ttk.Checkbutton(
+        main_frame,
+        text="Display English Translation",
+        variable=display_english_var
+    )
+    display_english_checkbox.grid(row=5, column=0, columnspan=3, pady=(20, 10), sticky="W")
+
     # Start Button
     start_button = ttk.Button(main_frame, text="Start", command=lambda: start_game(
         [os.path.join(milim_dir, subdir) for subdir, var in checkbox_vars.items() if var.get()],
-        [binyan for binyan, var in binyan_checkbox_vars.items() if var.get()]
+        [binyan for binyan, var in binyan_checkbox_vars.items() if var.get()],
+        display_english_var.get()
     ))
-    start_button.grid(row=5, column=0, columnspan=3, pady=20, sticky="EW")
+    start_button.grid(row=6, column=0, columnspan=3, pady=20, sticky="EW")
 
     # Random 10 Words Button
     random_button = ttk.Button(main_frame, text="Random 10 Words", command=lambda: choose_random_10_words(
-        [binyan for binyan, var in binyan_checkbox_vars.items() if var.get()]
+        [binyan for binyan, var in binyan_checkbox_vars.items() if var.get()],
+        display_english_var.get()
     ))
-    random_button.grid(row=6, column=0, columnspan=3, pady=10, sticky="EW")
+    random_button.grid(row=7, column=0, columnspan=3, pady=10, sticky="EW")
 
     # Display Time Entry
     display_time_label = ttk.Label(main_frame, text="Set Display Time (ms):", font=("Helvetica", 12))
-    display_time_label.grid(row=7, column=0, columnspan=3, pady=(20, 5), sticky="W")
+    display_time_label.grid(row=8, column=0, columnspan=3, pady=(20, 5), sticky="W")
     display_time = tk.StringVar(value=str(settings.get('display_time', 2500)))
     display_time_entry = ttk.Entry(main_frame, textvariable=display_time, font=("Helvetica", 12))
-    display_time_entry.grid(row=8, column=0, columnspan=3, pady=5, sticky="EW")
+    display_time_entry.grid(row=9, column=0, columnspan=3, pady=5, sticky="EW")
 
     # Repeat Count Entry
     repeat_count_label = ttk.Label(main_frame, text="Set Repeat Count:", font=("Helvetica", 12))
-    repeat_count_label.grid(row=9, column=0, columnspan=3, pady=(20, 5), sticky="W")
+    repeat_count_label.grid(row=10, column=0, columnspan=3, pady=(20, 5), sticky="W")
     repeat_count = tk.StringVar(value=str(settings.get('repeat_count', 1)))
     repeat_count_entry = ttk.Entry(main_frame, textvariable=repeat_count, font=("Helvetica", 12))
-    repeat_count_entry.grid(row=10, column=0, columnspan=3, pady=5, sticky="EW")
+    repeat_count_entry.grid(row=11, column=0, columnspan=3, pady=5, sticky="EW")
 
     # Tooltip function
     def create_tooltip(widget, text):
